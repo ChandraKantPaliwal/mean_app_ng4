@@ -45,6 +45,73 @@ app.post('/companies', (req, res) => {
 
 });
 
+app.get('/companies', (req, res) => {
+
+    Company.find({}, (err, companies) => {
+        if (err) {
+            return res.status(404).send(err);
+        }
+        return res.status(200).json(companies);
+    });
+
+});
+
+app.get('/companies/:id', (req, res) => {
+
+    let id = req.params.id;
+
+    Company.findById(id, (err, company) => {
+        if (err) {
+            return res.status(404).send(err);
+        }
+        return res.status(200).json(company);
+    })
+});
+
+app.put('/companies/:id', (req, res) => {
+
+    if (!req.params.id) {
+        return res.status(400).send({err: 'invalid id provided'});
+    }
+
+    let attributes = {};
+
+    if (req.body.city) {
+        attributes.city = req.body.city;
+    }
+    if (req.body.address) {
+        attributes.address = req.body.address;
+    }
+    if (req.body.name) {
+        attributes.name = req.body.name;
+    }
+
+    Company.findByIdAndUpdate(req.params.id, attributes, {new:true},(err, company) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        return res.status(200).json(company);
+    })
+});
+
+app.delete('/companies/:id',(req,res) => {
+
+    if (!req.params.id) {
+        return res.status(400).send({err: 'invalid id provided'});
+    }
+
+    Company.findByIdAndRemove(req.params.id,(err,company) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        if(!company){
+            return res.status(404).send({err: 'unable to find the company'});
+        }
+
+        return res.status(200).json({msg: 'company is deleted with id '+req.params.id})
+    })
+});
+
 app.listen('3000', () => {
     console.log('App is running on PORT 3000');
 });
