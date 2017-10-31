@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const cors = require('cors');
 const mongoose = require('mongoose');
 const routes = require('./routes/index');
 
@@ -12,8 +13,8 @@ mongoose.connect(MONGO_DB_URI, {
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cors());
 app.use('/api',routes);
-
 
 mongoose.connection.on('connected', () => {
     console.log('app is connected to mongodb ', MONGO_DB_URI);
